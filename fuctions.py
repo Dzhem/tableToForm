@@ -1,5 +1,6 @@
 from pathlib import *
 import xlrd
+from docxtpl import DocxTemplate
 
 
 def readInfoFromBook(path):
@@ -20,3 +21,16 @@ def readInfoFromBook(path):
         info.append(row_d)
 
     return info
+
+
+def renderTpl(path_tpl, contexts):
+    """
+    Заменяет значение полей шаблона данными из contexts и сохраняет новый файл
+    :param path_tpl: Путь до docx-шаблона
+    :param contexts: список словарей для замены полей шаблона
+    """
+    for i, context in enumerate(contexts):
+        doc = DocxTemplate(path_tpl)
+        doc.render(context)
+        new_path = f'{path_tpl.parent}/{path_tpl.stem}_{i}{path_tpl.suffix}'
+        doc.save(Path(new_path))

@@ -1,6 +1,7 @@
 from pathlib import *
 import xlrd
 from docxtpl import DocxTemplate
+import comtypes.client
 
 
 def readInfoFromBook(path):
@@ -34,3 +35,18 @@ def renderTpl(path_tpl, contexts):
         doc.render(context)
         new_path = f'{path_tpl.parent}/{path_tpl.stem}_{i}{path_tpl.suffix}'
         doc.save(Path(new_path))
+
+
+# Реализовать функцию docxToPdf
+wdFormatPDF = 17
+
+in_file = Path(input('Путь до docx: ')).absolute().as_posix()  # использовать атрибуты ф-ции
+out_file = Path(input('Куда сохранить pdf? ')).absolute().as_posix()  # использовать атрибуты ф-ции
+print(in_file, out_file)
+
+word = comtypes.client.CreateObject('Word.Application')
+doc = word.Documents.Open(in_file)
+doc.SaveAs(out_file, FileFormat=wdFormatPDF)
+doc.Close()
+word.Quit()
+# Здесь будет конец docxToPdf

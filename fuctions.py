@@ -1,7 +1,7 @@
 from pathlib import *
 import xlrd
 from docxtpl import DocxTemplate
-import comtypes.client
+from docx2pdf import convert
 
 
 def readInfoFromBook(path):
@@ -24,29 +24,33 @@ def readInfoFromBook(path):
     return info
 
 
-def renderTpl(path_tpl, contexts):
+def renderTpl(path_tpl, contexts, format='pdf'):
     """
     Заменяет значение полей шаблона данными из contexts и сохраняет новый файл
+    :param format: формат конечных файлов (PDF / docx)
     :param path_tpl: Путь до docx-шаблона
     :param contexts: список словарей для замены полей шаблона
     """
     for i, context in enumerate(contexts):
         doc = DocxTemplate(path_tpl)
         doc.render(context)
-        new_path = f'{path_tpl.parent}/{path_tpl.stem}_{i}{path_tpl.suffix}'
-        doc.save(Path(new_path))
+        new_path = Path(f'{path_tpl.parent}/{path_tpl.stem}_{i}{path_tpl.suffix}')
+        doc.save(new_path)
+
+        if format in ('pdf', 'PDF'):
+            docxToPdf(new_path, new_path.parent)
 
 
-# Реализовать функцию docxToPdf
-wdFormatPDF = 17
+def docxToPdf(in_file, out_file):
+    """
+    Функция конвертирует docx-файл в pdf-файл с последующим удалением docx-файла
+    :param in_file: путь к docx-файлу
+    :param out_file: путь для сохранения pdf-файла
+    :return:
+    """
+    convert(in_file, out_file)
 
-in_file = Path(input('Путь до docx: ')).absolute().as_posix()  # использовать атрибуты ф-ции
-out_file = Path(input('Куда сохранить pdf? ')).absolute().as_posix()  # использовать атрибуты ф-ции
-print(in_file, out_file)
-
-word = comtypes.client.CreateObject('Word.Application')
-doc = word.Documents.Open(in_file)
-doc.SaveAs(out_file, FileFormat=wdFormatPDF)
-doc.Close()
-word.Quit()
-# Здесь будет конец docxToPdf
+    try:
+        in_file.unlink()
+    except OSError as e:
+        print("Ошибка: %s : %s" % (in_file, e.strerror))

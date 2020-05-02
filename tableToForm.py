@@ -7,7 +7,8 @@ layout = [[sg.Text('Таблица', size=(14, 1)), sg.InputText(), sg.FileBrows
               'Обзор', file_types=(('Word', '*.docx'),), size=(10, 1))],
           [sg.Text('Папка сохранения', size=(14, 1)), sg.InputText(),
            sg.FolderBrowse('Обзор', size=(10, 1))],
-          [sg.Text('Формат сохранения', size=(14, 1)), sg.Radio('pdf', 'FORMAT', default=True), sg.Radio('docx', 'FORMAT'), sg.Submit('Старт!', size=(10, 1))]]
+          [sg.Text('Формат сохранения', size=(14, 1)), sg.Radio('pdf', 'FORMAT', default=True), sg.Radio('docx', 'FORMAT'), sg.Submit('Старт!', size=(10, 1))],
+          [sg.Output(size=(75, 20))]]
 
 window = sg.Window('Table To Form', layout)
 
@@ -17,8 +18,6 @@ while True:
     if event in (None, 'Cancel'):
         break
 
-    print('You entered ', values[0], values[1],
-          values[2], values[3], values[4])
     path_xl = Path(values[0])
     path_wd = Path(values[1])
 
@@ -27,7 +26,10 @@ while True:
     else:
         format = 'docx'
 
-    contexts = readInfoFromBook(path_xl)
-    renderTpl(path_wd, contexts, format)
+    try:
+        contexts = readInfoFromBook(path_xl)
+        renderTpl(path_wd, contexts, format)
+    except OSError as er:
+        print(er, end='\n\n')
 
 window.close()

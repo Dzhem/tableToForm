@@ -24,21 +24,24 @@ def readInfoFromBook(path):
     return info
 
 
-def renderTpl(path_tpl, contexts, format='pdf'):
+def renderTpl(path_tpl, path_out, contexts, format='pdf'):
     """
     Заменяет значение полей шаблона данными из contexts и сохраняет новый файл
     :param format: формат конечных файлов (PDF / docx)
     :param path_tpl: Путь до docx-шаблона
     :param contexts: список словарей для замены полей шаблона
     """
+    if path_out == '.':
+        path_out = path_tpl.parent
+
     for i, context in enumerate(contexts):
         doc = DocxTemplate(path_tpl)
         doc.render(context)
-        new_path = Path(f'{path_tpl.parent}/{path_tpl.stem}_{i}{path_tpl.suffix}')
+        new_path = Path(f'{path_out}/{path_tpl.stem}_{i}{path_tpl.suffix}')
         doc.save(new_path)
 
         if format in ('pdf', 'PDF'):
-            docxToPdf(new_path, new_path.parent)
+            docxToPdf(new_path, path_out)
 
 
 def docxToPdf(in_file, out_file):

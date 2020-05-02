@@ -20,6 +20,7 @@ while True:
 
     path_xl = Path(values[0])
     path_wd = Path(values[1])
+    path_out = Path(values[2])
 
     if values[3]:
         format = 'pdf'
@@ -28,7 +29,7 @@ while True:
 
     try:
         contexts = readInfoFromBook(path_xl)
-        renderTpl(path_wd, contexts, format)
+        renderTpl(path_wd, path_out, contexts, format)
     except OSError as er:
         print(er, end='\n\n')
 
